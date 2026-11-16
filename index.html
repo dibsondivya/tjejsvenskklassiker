@@ -338,7 +338,7 @@ function viewDay(){
   let html="";
   if(before&&d===PLAN.start)html+=`<div class="banner"><b>Starts Monday 23 November.</b> ${days2go} day${days2go===1?"":"s"} to go. Look through the days ahead, and set up your kit and bookings from the to-do items.</div>`;
   const c=S.coach;
-  if(c&&c.text)html+=`<div class="banner coach" style="--cn:${coachColor(todayIso)}"><b>Plan note</b>${c.at?` <span class="note-sm">${esc(String(c.at).slice(0,10))}</span>`:""}<br>${esc(c.text)}</div>`;
+  if(c&&c.text)html+=`<div class="banner coach" style="--cn:${coachColor(d)}"><b>Plan note</b>${c.at?` <span class="note-sm">${esc(String(c.at).slice(0,10))}</span>`:""}<br>${esc(c.text)}</div>`;
   html+=`<div class="card">
     <div class="daynav"><button data-act="prev" aria-label="Previous day">&larr; Prev</button>${d!==clamp(todayIso)?'<button data-act="gotoday">Today</button>':'<span class="note-sm">Today</span>'}<button data-act="next" aria-label="Next day">Next &rarr;</button></div>
     <div class="dayhead"><div class="date">${fmt(d)}</div>
