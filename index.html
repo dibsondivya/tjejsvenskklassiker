@@ -117,8 +117,9 @@ label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:
 .cal button.part{background:color-mix(in srgb,var(--good) 35%,var(--surface))}
 .cal button.miss{background:color-mix(in srgb,var(--warn) 30%,var(--surface))}
 .cal button.today{outline:2px solid var(--accent)}
-.cal button.race{border:2px solid var(--race);font-weight:700}
-.cal button.race::after{content:"";position:absolute;right:3px;top:3px;width:6px;height:6px;border-radius:50%;background:var(--race)}
+.cal button.rc{border:2px solid var(--race);color:var(--race);font-weight:700}
+.cal button.full.rc{color:var(--accent-ink)}
+.cal button.rc::after{content:"";position:absolute;right:3px;top:3px;width:6px;height:6px;border-radius:50%;background:var(--race)}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.75rem;color:var(--muted)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
 .stat{background:var(--surface2);border-radius:10px;padding:8px 10px}
@@ -369,18 +370,18 @@ function viewPlan(){
   while(m<=end){months.push(new Date(m));m.setMonth(m.getMonth()+1)}
   const raceMap=Object.fromEntries(PLAN.races.map(r=>[r.d,r]));
   const cards=months.map(mo=>{
-    const y=mo.getFullYear(),mm=mo.getMonth(),n=new Date(y,mm+1,0).getDate(),pad=(mo.getDay()+6)%7;
+    const y=mo.getFullYear(),mm=mo.getMonth(),n=new Date(y,mm+1,0).getDate();let first=1;while(first<=n&&!BY[iso(new Date(y,mm,first))])first++;const pad=(new Date(y,mm,first).getDay()+6)%7;
     let cells='<div class="h">M</div><div class="h">T</div><div class="h">W</div><div class="h">T</div><div class="h">F</div><div class="h">S</div><div class="h">S</div>';
     for(let i=0;i<pad;i++)cells+='<button class="pad" tabindex="-1" aria-hidden="true"></button>';
-    for(let day=1;day<=n;day++){
-      const d=iso(new Date(y,mm,day)); if(!BY[d]){cells+='<button class="pad" tabindex="-1" aria-hidden="true"></button>';continue}
+    for(let day=first;day<=n;day++){
+      const d=iso(new Date(y,mm,day)); if(!BY[d])continue;
       const sc=dayScore(d); let cl="";
       if(sc){ if(sc.done===sc.total)cl="full"; else if(sc.done>0)cl="part"; else if(d<todayIso)cl="miss"; }
-      cells+=`<button class="${cl} ${d===todayIso?"today":""} ${raceMap[d]?"race":""}" data-act="open" data-d="${d}" aria-label="${fmt(d)}${raceMap[d]?" "+esc(raceMap[d].n):""}">${day}</button>`;
+      cells+=`<button class="${cl} ${d===todayIso?"today":""} ${raceMap[d]?"rc":""}" data-act="open" data-d="${d}" aria-label="${fmt(d)}${raceMap[d]?" "+esc(raceMap[d].n):""}">${day}</button>`;
     }
     return `<div class="card"><h3>${mo.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h3><div class="cal">${cells}</div></div>`;
   }).join("");
-  return `<div class="card"><h2>Whole plan</h2><div class="legend"><span>Green: all done</span><span>Light green: some done</span><span>Amber: missed</span><span>Red dot: race day</span></div></div>${cards}
+  return `<div class="card"><h2>Whole plan</h2><div class="legend"><span>Green: all done</span><span>Light green: some done</span><span>Amber: missed</span><span>Red outline and date: race day</span></div></div>${cards}
   <div class="card"><h3>Phases</h3><table><tbody>
   <tr><td>Strength base</td><td>23 Nov – 3 Jan</td></tr><tr><td>Ski build</td><td>4 Jan – 13 Feb</td></tr><tr><td>Recovery</td><td>14 – 28 Feb</td></tr>
   <tr><td>Bike build</td><td>1 Mar – 12 Jun</td></tr><tr><td>Swim build</td><td>13 Jun – 9 Jul</td></tr><tr><td>Run build</td><td>10 Jul – 26 Sep</td></tr></tbody></table></div>`;
